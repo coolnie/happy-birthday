@@ -120,8 +120,8 @@
         { type: "yn", q: "5. 覺得松露很臭" },
         { type: "yn", q: "6. 不喜歡 Mister Donuts" },
         { type: "yn", q: "7. 喜歡鳳梨&哈密瓜，但是不喜歡鳳梨/哈密瓜口味的東西" },
-        { type: "input", q: "8. 生日願望(女朋友使命必達)" },
-        { type: "only-yes", q: "9. 我長大了，沒有甚麼難得倒我！" }
+        { type: "only-yes", q: "8. 我長大了，沒有甚麼難得倒我！" },
+        { type: "input", q: "最後. 生日願望(女朋友使命必達)" }
     ];
 
     let currentIdx = 0;
@@ -163,9 +163,9 @@
     function handleNo() {
         const questionKey = `第${currentIdx + 1}題回覆`;
         document.getElementById('content').innerHTML = `
-            <p style="color: #ffeb3b; font-weight: bold;">唉唷喂，金拍謝! <br>請更新最新正確資訊，讓我提供您更好的人生體驗</p>
-            <input type="text" id="correction-input" placeholder="請輸入正確資訊：">
-            <button class="btn-next" onclick="saveCorrectionAndNext('${questionKey}')">更新完成</button>
+            <p style="color: #ffeb3b; font-weight: bold;">唉唷喂，金拍謝! <br>請更新正確資訊，讓我提供您更好的人生體驗</p>
+            <input type="text" id="correction-input" placeholder="輸入正確資訊">
+            <button class="btn-next" onclick="saveCorrectionAndNext('${questionKey}')">更新完成!!</button>
         `;
     }
 
@@ -235,7 +235,7 @@
                     <canvas id="s2" width="260" height="130"></canvas>
                 </div>
 
-                <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 20px;">💡 請截圖保存，以免忘記</p>
+                <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 20px;">💡 截圖保存，以免言水馨忘記</p>
                 <p>Happy Birthday <3</p>
             </div>
         `;
@@ -283,4 +283,5 @@
 </body>
 
 </html>
+
 
