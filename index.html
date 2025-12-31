@@ -1,12 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>昱宏個人資訊更新系統</title>
+    <style>
+        :root {
+            --forest-green: #2D5A27;
+            --leaf-green: #A8C69F;
+            --earth-brown: #5D4037;
+            --soft-beige: #F5F5DC;
+            --heart-red: #ff4d6d;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(180deg, var(--forest-green), var(--leaf-green));
+            color: var(--soft-beige);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            padding: 30px 20px;
+            margin: 50px 0;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            height: fit-content;
+        }
+
+        .decor { font-size: 2.5rem; margin-bottom: 10px; }
+
+        /* 進度條樣式 */
+        .progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            margin: 20px 0;
+            position: relative;
+        }
+        #progress {
+            width: 0%;
+            height: 100%;
+            background: #fff;
+            border-radius: 5px;
+            transition: 0.5s ease;
+            position: relative;
+        }
+        #gift-icon {
+            position: absolute;
+            right: -10px;
+            top: -10px;
+            font-size: 20px;
+            transition: 0.5s ease;
+            display: none;
+        }
+
+        /* 按鈕樣式 */
+        .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        button {
+            padding: 12px 25px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+        .btn-yes { background-color: #f8ad9d; color: white; }
+        .btn-no { background-color: #6c757d; color: white; }
+        .btn-next { background-color: var(--earth-brown); color: white; width: 100%; }
+
+        /* 輸入框樣式 */
+        input, textarea {
+            width: 90%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            margin-top: 15px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        /* 刮刮卡樣式 */
+        .scratch-card {
+            position: relative;
+            width: 260px;
+            height: 130px;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        canvas { position: absolute; top: 0; left: 0; touch-action: none; }
+        .coupon-text { font-weight: bold; padding: 10px; font-size: 1.2rem; }
+
+        /* 愛心動畫 */
+        .heart {
+            position: fixed;
+            color: var(--heart-red);
+            font-size: 20px;
+            user-select: none;
+            pointer-events: none;
+            animation: moveUp 1.5s linear forwards;
+            z-index: 999;
+        }
+        @keyframes moveUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-200px) scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
 <body>
 
 <div class="container">
     <div id="game-area">
         <div class="decor">🥂✨🎂</div>
         
-        <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.2); border-radius: 5px; margin: 20px 0; position: relative;">
-            <div id="progress" style="width: 0%; height: 100%; background: #fff; border-radius: 5px; transition: 0.5s ease; position: relative;">
-                <span id="gift-icon" style="position: absolute; right: -10px; top: -10px; font-size: 20px; transition: 0.5s ease; display: none;">🎁</span>
+        <div class="progress-bar-container">
+            <div id="progress">
+                <span id="gift-icon">🎁</span>
             </div>
         </div>
 
@@ -40,7 +167,7 @@
     function startQuiz() { showQuestion(); }
 
     function showQuestion() {
-        // 修正進度計算：讓第一題就顯示進度
+        // 更新進度條
         const progress = ((currentIdx + 1) / questions.length) * 100;
         const progressEl = document.getElementById('progress');
         const giftEl = document.getElementById('gift-icon');
@@ -77,7 +204,7 @@
         document.getElementById('content').innerHTML = `
             <p style="color: #ffeb3b; font-weight: bold;">唉唷喂，金拍謝! <br>請更新正確資訊，讓我提供您更好的人生體驗</p>
             <input type="text" id="correction-input" placeholder="輸入正確資訊">
-            <button class="btn-next" style="margin-top:15px" onclick="saveCorrectionAndNext('${questionKey}')">更新完成!!</button>
+            <button class="btn-next" style="margin-top:15px" onclick="saveCorrectionAndNext('${questionKey}')">更新完成!</button>
         `;
     }
 
@@ -90,7 +217,7 @@
 
     function saveWishAndNext() {
         birthdayWish = document.getElementById('wish-input').value;
-        submitAndFinish(); // 最後一題完直接送出
+        submitAndFinish(); 
     }
 
     function nextQuestion() {
@@ -128,18 +255,17 @@
     }
 
     function showScratch() {
-        // 替換整個遊戲區塊，避免版面混亂
         document.getElementById('game-area').innerHTML = `
             <div id="scratch-area">
                 <h1 style="font-size: 1.5rem;">✨ 生日兌換券 ✨</h1>
                 
                 <div class="scratch-card">
-                    <div class="coupon-text">🎂 免費大餐一頓</div>
+                    <div class="coupon-text" style="color: #1B3022;">長大的味道</div>
                     <canvas id="s1" width="260" height="130"></canvas>
                 </div>
 
                 <div class="scratch-card">
-                    <div class="coupon-text">🎫 汰舊換新券</div>
+                    <div class="coupon-text" style="color: #B8860B;">🎫汰舊換新券</div>
                     <canvas id="s2" width="260" height="130"></canvas>
                 </div>
 
@@ -167,16 +293,13 @@
     function initScratch(id) {
         const canvas = document.getElementById(id);
         const ctx = canvas.getContext('2d');
-        
-        // 繪製銀色覆蓋層
         ctx.fillStyle = '#C0C0C0';
         ctx.fillRect(0, 0, 260, 130);
         
-        // 加一點「刮開我」的文字提示
         ctx.fillStyle = "#888";
         ctx.font = "20px Arial";
         ctx.textAlign = "center";
-        ctx.fillText("刮開看獎勵", 130, 75);
+        ctx.fillText("刮開", 130, 75);
 
         let isDrawing = false;
         const scratch = (e) => {
@@ -199,3 +322,4 @@
     }
 </script>
 </body>
+</html>
