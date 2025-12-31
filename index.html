@@ -100,8 +100,18 @@
 <div class="container">
     <div id="game-area">
         <div class="decor">🥂✨🎂</div>
+        //裝進度條
+        <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.2); border-radius: 5px; margin: 20px 0; position: relative;">
+        <div id="progress" style="width: 0%; height: 100%; background: #fff; border-radius: 5px; transition: 0.5s ease; position: relative;">
+            <span id="gift-icon" style="position: absolute; right: -10px; top: -10px; font-size: 20px; transition: 0.5s ease; display: none;">🎁</span>
+        </div>
+    </div>
+
+    <div id="content">
+        </div>
+</div>
         <div id="content">
-            <h2 id="title">恭喜昱宏又長大一歲！</h2>
+            <h2 id="title">恭喜昱宏長大一歲！</h2>
             <p id="desc">請開始更新您的個人資訊</p>
             <button class="btn-next" onclick="startQuiz()">開始填寫</button>
         </div>
@@ -131,14 +141,22 @@
     function startQuiz() { showQuestion(); }
 
     function showQuestion() {
-        // --- 新增進度條計算邏輯 ---
-        const progress = ((currentIdx) / questions.length) * 100;
-        const progressEl = document.getElementById('progress');
-        if (progressEl) {
-            progressEl.style.width = progress + '%';
-        }
-        // --------------------------------
-
+       // 1. 計算百分比
+    const progress = ((currentIdx) / questions.length) * 100;
+    
+    // 2. 更新進度條寬度
+    const progressEl = document.getElementById('progress');
+    const giftEl = document.getElementById('gift-icon');
+    
+    if (progressEl) {
+        progressEl.style.width = progress + '%';
+    }
+    
+    // 3. 讓禮物圖案出現
+    if (giftEl) {
+        giftEl.style.display = 'block';
+    }
+        //原本的題目開始
         const q = questions[currentIdx];
         let html = `<h3>題目 ${currentIdx + 1} / 9</h3><p>${q.q}</p>`;
 
@@ -283,5 +301,6 @@
 </body>
 
 </html>
+
 
 
