@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>昱宏個人資訊更新系統</title>
+    <style>
+        :root {
+            --forest-green: #2D5A27;
+            --leaf-green: #A8C69F;
+            --earth-brown: #5D4037;
+            --soft-beige: #F5F5DC;
+            --heart-red: #ff4d6d;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(180deg, var(--forest-green), var(--leaf-green));
+            color: var(--soft-beige);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 50px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            height: fit-content;
+        }
+
+        .decor { font-size: 2rem; margin-bottom: 10px; }
+
+        .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        button {
+            padding: 12px 25px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-yes { background-color: #f8ad9d; color: white; }
+        .btn-no { background-color: #6c757d; color: white; }
+        .btn-next { background-color: var(--earth-brown); color: white; width: 100%; }
+
+        input, textarea {
+            width: 90%;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            margin-top: 15px;
+            font-family: inherit;
+        }
+
+        .scratch-card {
+            position: relative;
+            width: 260px;
+            height: 130px;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        canvas { position: absolute; top: 0; left: 0; touch-action: none; }
+        .coupon-text { color: var(--earth-brown); font-weight: bold; padding: 10px; }
+
+        .heart {
+            position: fixed;
+            color: var(--heart-red);
+            font-size: 20px;
+            user-select: none;
+            pointer-events: none;
+            animation: moveUp 1.5s linear forwards;
+            z-index: 999;
+        }
+        @keyframes moveUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-200px) scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="game-area">
+        <div class="decor">🥂✨🎂</div>
+        <div id="content">
+            <h2 id="title">恭喜昱宏又長大一歲！</h2>
+            <p id="desc">請開始更新您的個人資訊</p>
+            <button class="btn-next" onclick="startQuiz()">開始填寫</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 注意：請在此處填入妳在 Formspree 申請到的網址
+    const FORMSPREE_URL = "https://formspree.io/f/mnjqeopy"; 
+
+    const questions = [
+        { type: "yn", q: "1. 不喜歡海鮮，包括龍蝦跟生魚片壽司，可是喜歡蝦子、蛤蜊、吳郭魚、烤魷魚" },
+        { type: "yn", q: "2. 喜歡小隻的蝦子勝過大隻的" },
+        { type: "yn", q: "3. 不喜歡地瓜葉" },
+        { type: "yn", q: "4. 不喜歡很多芋泥的芋頭牛奶" },
+        { type: "yn", q: "5. 覺得松露很臭" },
+        { type: "yn", q: "6. 不喜歡 Mister Donuts" },
+        { type: "yn", q: "7. 喜歡鳳梨&哈密瓜，但是不喜歡鳳梨/哈密瓜口味的東西" },
+        { type: "input", q: "8. 生日願望(女朋友使命必達)" },
+        { type: "only-yes", q: "9. 我長大了，沒有甚麼難得倒我！" }
+    ];
+
+    let currentIdx = 0;
+    let birthdayWish = "";
+    let corrections = {}; // 用來存放他選「否」之後輸入的正確資訊
+
+    function startQuiz() { showQuestion(); }
+
+    function showQuestion() {
+        const q = questions[currentIdx];
+        let html = `<h3>題目 ${currentIdx + 1} / 9</h3><p>${q.q}</p>`;
+
+        if (q.type === "yn") {
+            html += `<div class="btn-group">
+                        <button class="btn-yes" onclick="handleYes()">是</button>
+                        <button class="btn-no" onclick="handleNo()">否</button>
+                    </div>`;
+        } else if (q.type === "input") {
+            html += `<textarea id="wish-input" rows="3" placeholder="寫下你的願望..."></textarea>
+                    <button class="btn-next" onclick="saveWishAndNext()">下一步</button>`;
+        } else if (q.type === "only-yes") {
+            html += `<div class="btn-group">
+                        <button class="btn-yes" style="width:100%" onclick="submitAndFinish()">是</button>
+                    </div>`;
+        }
+        document.getElementById('content').innerHTML = html;
+    }
+
+    function handleYes() { createHearts(); setTimeout(nextQuestion, 600); }
+
+    function handleNo() {
+        const questionKey = `第${currentIdx + 1}題回覆`;
+        document.getElementById('content').innerHTML = `
+            <p style="color: #ffeb3b; font-weight: bold;">唉唷喂，金拍謝! <br>請更新最新正確資訊，讓我提供您更好的人生體驗</p>
+            <input type="text" id="correction-input" placeholder="請輸入正確資訊：">
+            <button class="btn-next" onclick="saveCorrectionAndNext('${questionKey}')">更新完成</button>
+        `;
+    }
+
+    function saveCorrectionAndNext(key) {
+        const val = document.getElementById('correction-input').value;
+        corrections[key] = val || "（點選否但未輸入文字）";
+        nextQuestion();
+    }
+
+    function saveWishAndNext() {
+        birthdayWish = document.getElementById('wish-input').value;
+        nextQuestion();
+    }
+
+    function nextQuestion() {
+        currentIdx++;
+        if (currentIdx < questions.length) { showQuestion(); }
+    }
+
+    function submitAndFinish() {
+        createHearts();
+        document.getElementById('content').innerHTML = `<p>正在同步資訊到偶的心中...</p>`;
+        
+        // 整理所有要發送的資料
+        const payload = {
+            "昱宏的生日願望": birthdayWish,
+            "修正資訊": corrections,
+            "長大宣言": "是"
+        };
+        
+        fetch(FORMSPREE_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
+        }).finally(() => {
+            showFinal();
+        });
+    }
+
+    function showFinal() {
+        document.getElementById('content').innerHTML = `
+            <h2>感謝你的配合！</h2>
+            <p>已接收到最新資訊 >3<</p>
+            <button class="btn-next" onclick="showScratch()">查看獎勵</button>
+        `;
+    }
+
+    function showScratch() {
+        document.getElementById('game-area').innerHTML = `
+            <div id="scratch-area" style="display:block">
+                <h1>✨ 生日兌換券 ✨</h1>
+                <div class="scratch-card">
+                    <div class="coupon-text">長大的味道</div>
+                    <canvas id="s1" width="260" height="130"></canvas>
+                </div>
+                <div class="scratch-card">
+                    <div class="coupon-text">🎫 汰舊換新券</div>
+                    <canvas id="s2" width="260" height="130"></canvas>
+                </div>
+                <p>Happy Birthday <3</p>
+            </div>
+        `;
+        initScratch('s1');
+        initScratch('s2');
+    }
+
+    function createHearts() {
+        for(let i=0; i<10; i++) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerText = '❤';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.top = '80vh';
+            heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 1500);
+        }
+    }
+
+    function initScratch(id) {
+        const canvas = document.getElementById(id);
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#C0C0C0';
+        ctx.fillRect(0, 0, 260, 130);
+        let isDrawing = false;
+        const scratch = (e) => {
+            if(!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+            const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(x, y, 20, 0, Math.PI*2);
+            ctx.fill();
+        };
+        canvas.addEventListener('mousedown', () => isDrawing = true);
+        canvas.addEventListener('touchstart', () => isDrawing = true);
+        window.addEventListener('mouseup', () => isDrawing = false);
+        window.addEventListener('touchend', () => isDrawing = false);
+        canvas.addEventListener('mousemove', scratch);
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); scratch(e); });
+    }
+</script>
+</body>
+</html>
