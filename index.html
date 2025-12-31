@@ -206,14 +206,18 @@
         document.getElementById('game-area').innerHTML = `
             <div id="scratch-area" style="display:block">
                 <h1>✨ 生日兌換券 ✨</h1>
+                
                 <div class="scratch-card">
-                    <div class="coupon-text">長大的味道</div>
+                    <div class="coupon-text" style="color: #1B3022;">長大的味道</div>
                     <canvas id="s1" width="260" height="130"></canvas>
                 </div>
+
                 <div class="scratch-card">
-                    <div class="coupon-text">🎫 汰舊換新券</div>
+                    <div class="coupon-text" style="color: #B8860B;">🎫 汰舊換新券</div>
                     <canvas id="s2" width="260" height="130"></canvas>
                 </div>
+
+                <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 20px;">💡 請截圖保存，以免忘記</p>
                 <p>Happy Birthday <3</p>
             </div>
         `;
@@ -259,4 +263,5 @@
     }
 </script>
 </body>
+
 </html>
