@@ -1,115 +1,15 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>昱宏個人資訊更新系統</title>
-    <style>
-        :root {
-            --forest-green: #2D5A27;
-            --leaf-green: #A8C69F;
-            --earth-brown: #5D4037;
-            --soft-beige: #F5F5DC;
-            --heart-red: #ff4d6d;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: "Microsoft JhengHei", sans-serif;
-            background: linear-gradient(180deg, var(--forest-green), var(--leaf-green));
-            color: var(--soft-beige);
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .container {
-            <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin-bottom: 20px;">
-    <div id="progress" style="width: 0%; height: 100%; background: #fff; border-radius: 2px; transition: 0.5s;"></div>
-</div>
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            padding: 30px 20px;
-            margin-top: 50px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            height: fit-content;
-        }
-
-        .decor { font-size: 2rem; margin-bottom: 10px; }
-
-        .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-        button {
-            padding: 12px 25px;
-            border-radius: 25px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .btn-yes { background-color: #f8ad9d; color: white; }
-        .btn-no { background-color: #6c757d; color: white; }
-        .btn-next { background-color: var(--earth-brown); color: white; width: 100%; }
-
-        input, textarea {
-            width: 90%;
-            padding: 10px;
-            border-radius: 10px;
-            border: none;
-            margin-top: 15px;
-            font-family: inherit;
-        }
-
-        .scratch-card {
-            position: relative;
-            width: 260px;
-            height: 130px;
-            margin: 20px auto;
-            background: #fff;
-            border-radius: 10px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        canvas { position: absolute; top: 0; left: 0; touch-action: none; }
-        .coupon-text { color: var(--earth-brown); font-weight: bold; padding: 10px; }
-
-        .heart {
-            position: fixed;
-            color: var(--heart-red);
-            font-size: 20px;
-            user-select: none;
-            pointer-events: none;
-            animation: moveUp 1.5s linear forwards;
-            z-index: 999;
-        }
-        @keyframes moveUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-200px) scale(1.5); opacity: 0; }
-        }
-    </style>
-</head>
 <body>
 
 <div class="container">
     <div id="game-area">
         <div class="decor">🥂✨🎂</div>
-        //裝進度條
+        
         <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.2); border-radius: 5px; margin: 20px 0; position: relative;">
-        <div id="progress" style="width: 0%; height: 100%; background: #fff; border-radius: 5px; transition: 0.5s ease; position: relative;">
-            <span id="gift-icon" style="position: absolute; right: -10px; top: -10px; font-size: 20px; transition: 0.5s ease; display: none;">🎁</span>
+            <div id="progress" style="width: 0%; height: 100%; background: #fff; border-radius: 5px; transition: 0.5s ease; position: relative;">
+                <span id="gift-icon" style="position: absolute; right: -10px; top: -10px; font-size: 20px; transition: 0.5s ease; display: none;">🎁</span>
+            </div>
         </div>
-    </div>
 
-    <div id="content">
-        </div>
-</div>
         <div id="content">
             <h2 id="title">恭喜昱宏長大一歲！</h2>
             <p id="desc">請開始更新您的個人資訊</p>
@@ -119,7 +19,6 @@
 </div>
 
 <script>
-    // 注意：請在此處填入妳在 Formspree 申請到的網址
     const FORMSPREE_URL = "https://formspree.io/f/mnjqeopy"; 
 
     const questions = [
@@ -136,29 +35,21 @@
 
     let currentIdx = 0;
     let birthdayWish = "";
-    let corrections = {}; // 用來存放他選「否」之後輸入的正確資訊
+    let corrections = {}; 
 
     function startQuiz() { showQuestion(); }
 
     function showQuestion() {
-       // 1. 計算百分比
-    const progress = ((currentIdx) / questions.length) * 100;
-    
-    // 2. 更新進度條寬度
-    const progressEl = document.getElementById('progress');
-    const giftEl = document.getElementById('gift-icon');
-    
-    if (progressEl) {
-        progressEl.style.width = progress + '%';
-    }
-    
-    // 3. 讓禮物圖案出現
-    if (giftEl) {
-        giftEl.style.display = 'block';
-    }
-        //原本的題目開始
+        // 修正進度計算：讓第一題就顯示進度
+        const progress = ((currentIdx + 1) / questions.length) * 100;
+        const progressEl = document.getElementById('progress');
+        const giftEl = document.getElementById('gift-icon');
+        
+        if (progressEl) progressEl.style.width = progress + '%';
+        if (giftEl) giftEl.style.display = 'block';
+
         const q = questions[currentIdx];
-        let html = `<h3>題目 ${currentIdx + 1} / 9</h3><p>${q.q}</p>`;
+        let html = `<h3>題目 ${currentIdx + 1} / ${questions.length}</h3><p>${q.q}</p>`;
 
         if (q.type === "yn") {
             html += `<div class="btn-group">
@@ -167,54 +58,52 @@
                     </div>`;
         } else if (q.type === "input") {
             html += `<textarea id="wish-input" rows="3" placeholder="寫下你的願望..."></textarea>
-                    <button class="btn-next" onclick="saveWishAndNext()">下一步</button>`;
+                    <button class="btn-next" style="margin-top:10px" onclick="saveWishAndNext()">提交並完成更新</button>`;
         } else if (q.type === "only-yes") {
             html += `<div class="btn-group">
-                        <button class="btn-yes" style="width:100%" onclick="submitAndFinish()">是</button>
+                        <button class="btn-yes" style="width:100%" onclick="handleYes()">是 (當然是!)</button>
                     </div>`;
         }
         document.getElementById('content').innerHTML = html;
     }
 
-    function handleYes() { createHearts(); setTimeout(nextQuestion, 600); }
+    function handleYes() { 
+        createHearts(); 
+        setTimeout(nextQuestion, 600); 
+    }
 
     function handleNo() {
         const questionKey = `第${currentIdx + 1}題回覆`;
         document.getElementById('content').innerHTML = `
             <p style="color: #ffeb3b; font-weight: bold;">唉唷喂，金拍謝! <br>請更新正確資訊，讓我提供您更好的人生體驗</p>
             <input type="text" id="correction-input" placeholder="輸入正確資訊">
-            <button class="btn-next" onclick="saveCorrectionAndNext('${questionKey}')">更新完成!!</button>
+            <button class="btn-next" style="margin-top:15px" onclick="saveCorrectionAndNext('${questionKey}')">更新完成!!</button>
         `;
     }
 
     function saveCorrectionAndNext(key) {
         const inputEl = document.getElementById('correction-input');
-        const val = inputEl.value;
-        
-        // 強制輸入框失去焦點，收起鍵盤
+        corrections[key] = inputEl.value || "（點選否但未輸入文字）";
         inputEl.blur(); 
-        
-        corrections[key] = val || "（點選否但未輸入文字）";
-        
-        // 稍微延遲一下再跳題，讓畫面有時間歸位
         setTimeout(nextQuestion, 100);
     }
 
     function saveWishAndNext() {
         birthdayWish = document.getElementById('wish-input').value;
-        nextQuestion();
+        submitAndFinish(); // 最後一題完直接送出
     }
 
     function nextQuestion() {
         currentIdx++;
-        if (currentIdx < questions.length) { showQuestion(); }
+        if (currentIdx < questions.length) { 
+            showQuestion(); 
+        }
     }
 
     function submitAndFinish() {
         createHearts();
         document.getElementById('content').innerHTML = `<p>正在同步資訊到偶的心中...</p>`;
         
-        // 整理所有要發送的資料
         const payload = {
             "生日願望": birthdayWish,
             "修正資訊": corrections,
@@ -239,22 +128,23 @@
     }
 
     function showScratch() {
+        // 替換整個遊戲區塊，避免版面混亂
         document.getElementById('game-area').innerHTML = `
-            <div id="scratch-area" style="display:block">
-                <h1>✨ 生日兌換券 ✨</h1>
+            <div id="scratch-area">
+                <h1 style="font-size: 1.5rem;">✨ 生日兌換券 ✨</h1>
                 
                 <div class="scratch-card">
-                    <div class="coupon-text" style="color: #6a8d6d;">長大的味道</div>
+                    <div class="coupon-text">🎂 免費大餐一頓</div>
                     <canvas id="s1" width="260" height="130"></canvas>
                 </div>
 
                 <div class="scratch-card">
-                    <div class="coupon-text" style="color: #B8860B;">🎫 汰舊換新券</div>
+                    <div class="coupon-text">🎫 汰舊換新券</div>
                     <canvas id="s2" width="260" height="130"></canvas>
                 </div>
 
                 <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 20px;">💡 截圖保存，以免言水馨忘記</p>
-                <p>Happy Birthday <3</p>
+                <p>Happy Birthday ❤️</p>
             </div>
         `;
         initScratch('s1');
@@ -277,8 +167,17 @@
     function initScratch(id) {
         const canvas = document.getElementById(id);
         const ctx = canvas.getContext('2d');
+        
+        // 繪製銀色覆蓋層
         ctx.fillStyle = '#C0C0C0';
         ctx.fillRect(0, 0, 260, 130);
+        
+        // 加一點「刮開我」的文字提示
+        ctx.fillStyle = "#888";
+        ctx.font = "20px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("刮開看獎勵", 130, 75);
+
         let isDrawing = false;
         const scratch = (e) => {
             if(!isDrawing) return;
@@ -290,8 +189,9 @@
             ctx.arc(x, y, 20, 0, Math.PI*2);
             ctx.fill();
         };
+
         canvas.addEventListener('mousedown', () => isDrawing = true);
-        canvas.addEventListener('touchstart', () => isDrawing = true);
+        canvas.addEventListener('touchstart', (e) => { isDrawing = true; e.preventDefault(); });
         window.addEventListener('mouseup', () => isDrawing = false);
         window.addEventListener('touchend', () => isDrawing = false);
         canvas.addEventListener('mousemove', scratch);
@@ -299,8 +199,3 @@
     }
 </script>
 </body>
-
-</html>
-
-
-
